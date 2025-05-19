@@ -1,35 +1,30 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Conversor de Moedas - IFSC</title>
-  <link rel="stylesheet" type="text/css" href="ConversorDeMoedas.css">
+    <meta charset="UTF-8">
+    <title>Conversor de Moedas - IFSC</title>
+    <link rel="stylesheet" type="text/css" href="ConversorDeMoedas.css">
 </head>
 <body>
-  <div class="container">
+<div class="container">
     <h1>Conversor de Moedas</h1>
 
     <div class="form-group">
-      <label for="from-currency">Moeda de Origem:</label>
-      <select id="from-currency">
-        <option value="USD">USD</option>
-        <option value="BRL">BRL</option>
-        <option value="EUR">EUR</option>
-      </select>
+        <label for="from-currency">Moeda de Origem:</label>
+        <select id="from-currency" onchange="hideResult()">
+        </select>
 
-      <label for="to-currency">Moeda de Destino:</label>
-      <select id="to-currency">
-        <option value="BRL">BRL</option>
-        <option value="USD">USD</option>
-        <option value="EUR">EUR</option>
-      </select>
+        <label for="to-currency">Moeda de Destino:</label>
+        <select id="to-currency" onchange="hideResult()">
+        </select>
 
-      <input type="number" id="amount" placeholder="Valor">
-      <button onclick="converter()">Converter</button>
+        <label for="amount">Valor</label>
+        <input type="number" id="amount" placeholder="Valor" onchange="hideResult()">
+        <button onclick="convert()">Converter</button>
     </div>
 
     <div id="resultado"></div>
-  </div>
-  <script src="ConversorDeMoedas.js"></script>
+</div>
+<script src="ConversorDeMoedas.js"></script>
 </body>
 </html>
