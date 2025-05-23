@@ -51,7 +51,6 @@ button {
 @media (max-width: 480px) {
     body {
         padding: 10px;
-        height: auto; /* evita overflow em telas pequenas */
     }
 
     .container {
