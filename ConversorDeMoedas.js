@@ -1,12 +1,6 @@
-const supportedCurrencies = ["USD", "EUR", "BRL", "JPY", "GBP", "CAD"]
-const conversionRates = {
-    "USD": {"EUR": 0.85, "BRL": 5.25, "JPY": 110.0, "GBP": 0.75, "CAD": 1.25},
-    "EUR": {"USD": 1.18, "BRL": 6.15, "JPY": 130.0, "GBP": 0.88, "CAD": 1.47},
-    "BRL": {"USD": 0.19, "EUR": 0.16, "JPY": 21.0, "GBP": 0.14, "CAD": 0.24},
-    "JPY": {"USD": 0.0091, "EUR": 0.0077, "BRL": 0.047, "GBP": 0.0065, "CAD": 0.011},
-    "GBP": {"USD": 1.33, "EUR": 1.14, "BRL": 7.14, "JPY": 153.0, "CAD": 1.67},
-    "CAD": {"USD": 0.80, "EUR": 0.68, "BRL": 4.15, "JPY": 90.0, "GBP": 0.60}
-}
+const supportedCurrencies = ["USD", "EUR", "BRL", "JPY", "GBP", "CAD"];
+
+const cachedRates = {};
 
 function populateSelects() {
     const fromSelect = document.getElementById("from-currency");
@@ -27,7 +21,7 @@ function populateSelects() {
 
 populateSelects();
 
-function convert() {
+async function convert() {
     const resultDiv = document.getElementById("resultado")
     const fromCurrency = document.getElementById("from-currency").value;
     const toCurrency = document.getElementById("to-currency").value;
@@ -47,7 +41,33 @@ function convert() {
         return;
     }
 
-    let convertedAmount = amount * conversionRates[fromCurrency][toCurrency];
+    let conversionRate;
+    const conversionKey = fromCurrency + toCurrency;
+
+    if (!cachedRates[conversionKey] || cachedRates[conversionKey].limitDate < new Date()) {
+        const request = await fetch(`https://economia.awesomeapi.com.br/json/last/${fromCurrency}-${toCurrency}`);
+
+        if (!request.ok) {
+            resultDiv.innerText = "Erro ao buscar a taxa de câmbio. Tente novamente mais tarde.";
+            resultDiv.style.color = "red";
+            resultDiv.style.display = "block";
+            return;
+        }
+
+        let currentDate = new Date();
+        const data = await request.json();
+
+        cachedRates[conversionKey] = {
+            rate: data[conversionKey]["ask"],
+            limitDate: currentDate.setMinutes(currentDate.getMinutes() + 5)
+        };
+
+        conversionRate = cachedRates[conversionKey].rate;
+    } else {
+        conversionRate = cachedRates[conversionKey].rate;
+    }
+
+    let convertedAmount = amount * conversionRate;
     resultDiv.innerText = `${formatCurrency(amount, fromCurrency)} são iguais a ${formatCurrency(convertedAmount, toCurrency)}`;
     resultDiv.style.color = "black";
     resultDiv.style.display = "block";
