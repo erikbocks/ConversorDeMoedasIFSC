@@ -51,6 +51,8 @@ function convert() {
     resultDiv.innerText = `${formatCurrency(amount, fromCurrency)} são iguais a ${formatCurrency(convertedAmount, toCurrency)}`;
     resultDiv.style.color = "black";
     resultDiv.style.display = "block";
+
+    addToHistory(amount, convertedAmount, fromCurrency, toCurrency);
 }
 
 function formatCurrency(value, currency) {
@@ -63,7 +65,24 @@ function formatCurrency(value, currency) {
     return new Intl.NumberFormat('pt-BR', options).format(value);
 }
 
+function addToHistory(value, convertedValue, fromCurrency, toCurrency) {
+    const lista = document.getElementById("history-list");
+    const item = document.createElement("li");
+    item.textContent = `${getCurrentDate()} - ${formatCurrency(value, fromCurrency)} → ${formatCurrency(convertedValue, toCurrency)}`;
+    lista.prepend(item);
+}
+
 function hideResult() {
     const resultDiv = document.getElementById("resultado");
     resultDiv.style.display = "none";
+}
+
+function getCurrentDate() {
+    const now = new Date();
+
+    return now.toLocaleDateString('pt-BR').split('/').join('/') +
+        ' - ' +
+        now.getHours().toString().padStart(2, '0') +
+        ':' +
+        now.getMinutes().toString().padStart(2, '0');
 }
