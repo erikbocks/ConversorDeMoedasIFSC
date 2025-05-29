@@ -45,24 +45,31 @@ async function convert() {
     const conversionKey = fromCurrency + toCurrency;
 
     if (!cachedRates[conversionKey] || cachedRates[conversionKey].limitDate < new Date()) {
-        const request = await fetch(`https://economia.awesomeapi.com.br/json/last/${fromCurrency}-${toCurrency}`);
+        try {
+            const request = await fetch(`https://economia.awesomeapi.com.br/json/last/${fromCurrency}-${toCurrency}`);
 
-        if (!request.ok) {
+            if (!request.ok) {
+                resultDiv.innerText = "Conversão indisponível para as moedas selecionadas.";
+                resultDiv.style.color = "red";
+                resultDiv.style.display = "block";
+                return;
+            }
+
+            let currentDate = new Date();
+            const data = await request.json();
+
+            cachedRates[conversionKey] = {
+                rate: data[conversionKey]["ask"],
+                limitDate: currentDate.setMinutes(currentDate.getMinutes() + 5)
+            };
+
+            conversionRate = cachedRates[conversionKey].rate;
+        } catch (error) {
             resultDiv.innerText = "Erro ao buscar a taxa de câmbio. Tente novamente mais tarde.";
             resultDiv.style.color = "red";
             resultDiv.style.display = "block";
             return;
         }
-
-        let currentDate = new Date();
-        const data = await request.json();
-
-        cachedRates[conversionKey] = {
-            rate: data[conversionKey]["ask"],
-            limitDate: currentDate.setMinutes(currentDate.getMinutes() + 5)
-        };
-
-        conversionRate = cachedRates[conversionKey].rate;
     } else {
         conversionRate = cachedRates[conversionKey].rate;
     }
